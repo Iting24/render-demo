@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}文章列表 - 簡易部落格{% endblock %}
+
+{% block content %}
+  <h1>文章列表</h1>
+  {% if posts %}
+    <div class="list-group">
+      {% for p in posts %}
+        <a href="{{ url_for('show_post', post_id=p.id) }}" class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ p.title }}</h5>
+            <small>by {{ p.author }}</small>
+          </div>
+          <p class="mb-1 text-truncate">{{ p.content }}</p>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>目前沒有文章。<a href="{{ url_for('new_post') }}">新增一篇</a></p>
+  {% endif %}
+{% endblock %}
