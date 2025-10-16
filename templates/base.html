@@ -15,6 +15,15 @@
             <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">文章列表</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('new_post') }}">新增文章</a></li>
           </ul>
+          <ul class="navbar-nav">
+            {% if session.user_id is defined and session.user_id %}
+              <li class="nav-item"><span class="navbar-text">已登入</span></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">登出</a></li>
+            {% else %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">登入</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">註冊</a></li>
+            {% endif %}
+          </ul>
         </div>
       </div>
     </nav>

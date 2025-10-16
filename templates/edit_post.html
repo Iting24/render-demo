@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}編輯文章 - 簡易部落格{% endblock %}
+
+{% block content %}
+  <h1>編輯文章</h1>
+  <form id="edit-post-form">
+    <div class="mb-3">
+      <label class="form-label">標題</label>
+      <input class="form-control" id="title" name="title" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">作者</label>
+      <input class="form-control" id="author" name="author" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">內容</label>
+      <textarea class="form-control" id="content" name="content" rows="10" required></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">儲存</button>
+    <a class="btn btn-secondary" href="/">取消</a>
+  </form>
+
+  <script>
+    const postId = {{ post_id|tojson }};
+    async function loadPost() {
+      const res = await fetch(`/api/posts/${postId}`);
+      if (!res.ok) {
+        alert('讀取文章失敗');
+        window.location.href = '/';
+        return;
+      }
+      const p = await res.json();
+      document.getElementById('title').value = p.title;
+      document.getElementById('author').value = p.author;
+      document.getElementById('content').value = p.content;
+    }
+
+    document.getElementById('edit-post-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value.trim();
+      const author = document.getElementById('author').value.trim();
+      const content = document.getElementById('content').value.trim();
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, author, content })
+      });
+      if (res.ok) {
+        const p = await res.json();
+        window.location.href = `/post/${p.id}`;
+      } else {
+        const err = await res.json();
+        alert('儲存失敗：' + (err.error || res.statusText));
+      }
+    });
+
+    loadPost();
+  </script>
+
+{% endblock %}

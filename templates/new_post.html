@@ -4,20 +4,45 @@
 
 {% block content %}
   <h1>新增文章</h1>
-  <form method="post">
+  <form id="new-post-form">
     <div class="mb-3">
       <label class="form-label">標題</label>
-      <input class="form-control" name="title" value="{{ title or '' }}" required>
+      <input class="form-control" id="title" name="title" required>
     </div>
     <div class="mb-3">
       <label class="form-label">作者</label>
-      <input class="form-control" name="author" value="{{ author or '' }}" required>
+      <input class="form-control" id="author" name="author" required>
     </div>
     <div class="mb-3">
       <label class="form-label">內容</label>
-      <textarea class="form-control" name="content" rows="10" required>{{ content or '' }}</textarea>
+      <textarea class="form-control" id="content" name="content" rows="10" required></textarea>
     </div>
     <button class="btn btn-primary" type="submit">送出</button>
     <a class="btn btn-secondary" href="{{ url_for('index') }}">取消</a>
   </form>
+
+  <script>
+    document.getElementById('new-post-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value.trim();
+      const author = document.getElementById('author').value.trim();
+      const content = document.getElementById('content').value.trim();
+      if (!title || !author || !content) {
+        alert('請填寫標題、作者與內容');
+        return;
+      }
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, author, content })
+      });
+      if (res.ok) {
+        const post = await res.json();
+        window.location.href = `/post/${post.id}`;
+      } else {
+        const err = await res.json();
+        alert('建立失敗：' + (err.error || res.statusText));
+      }
+    });
+  </script>
 {% endblock %}
